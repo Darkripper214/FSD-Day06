@@ -15,6 +15,8 @@ const pool = mysql.createPool({
 const SQL_FIND_BY_NAME =
   'select * from apps where name like ? limit ? offset ?';
 
+const SQL_FIND_TOTAL = 'select count(*) from apps where name like ?';
+
 // Ping the pool
 const startApp = async (app, pool) => {
   try {
@@ -57,13 +59,17 @@ app.set('view engine', 'hbs');
 
 app.get('/search', async (req, res) => {
   let offset, previousPageState;
+  let btnClicked = req.query.btnClicked;
+
   let nextPageState = false;
-  if (parseInt(req.query.offset) < 0) {
-    offset = 0;
+
+  offset = parseInt(req.query.offset) || 0;
+  if (btnClicked === 'next') {
+    offset += 10;
   } else {
-    offset = parseInt(req.query.offset);
+    offset = Math.max(0, offset - 10);
   }
-  /* let offset = parseInt(req.query.offset) || 0; */
+
   if (offset === 0) {
     previousPageState = false;
   } else {
@@ -79,9 +85,12 @@ app.get('/search', async (req, res) => {
       limit,
       offset,
     ]);
+    const totalResults = await conn.query(SQL_FIND_TOTAL, [`%${q}%`]);
+    totalResult = totalResults[0][0]['count(*)'];
     result = results[0];
   } catch (err) {
     console.log(err);
+    res.send(err);
   } finally {
     // Release connection
     await conn.release();
@@ -102,6 +111,7 @@ app.get('/search', async (req, res) => {
     previousPageState,
     nextPageState,
     resultLength: result.length,
+    totalResult,
   });
 });
 

@@ -5,7 +5,7 @@
 
     {{#if result}}
 
-    <h3>Showing Result from {{offset}} to {{math offset "+" resultLength}}</h3>
+    <h3>Showing Result from {{math offset "+" 1}} to {{math offset "+" resultLength}} of {{totalResult}}</h3>
     <table class="table table-striped table-bordered">
       <thead class="thead-dark ">
         <tr>
@@ -35,22 +35,16 @@
       <div class="row">
         <div class="col">
           <form action="/search" method='get' class="d-flex justify-content-start">
-            <input type="hidden" type="text" name="offset" placeholder="input search" value={{math offset "-" 10}}>
-            <input type="hidden" type="text" name="q" placeholder="input search" value={{q}}>
+            <input type="hidden" type="text" name="offset" value={{ offset}}>
+            <input type="hidden" type="text" name="q" value={{q}}>
             {{#if previousPageState}}
-            <button class="btn btn-warning" type="submit">Previous Page</button>
+            <button class="btn btn-warning" name='btnClicked' value='prev' type="submit">Previous Page</button>
             {{/if }}
-          </form>
-        </div>
-        <div class="col d-flex justify-content-center">
-          <a class="btn btn-primary" href="/" role="button">Return Home</a>
-        </div>
-        <div class="col">
-          <form action="/search" method='get' class="d-flex justify-content-end">
-            <input type="hidden" type="text" name="offset" placeholder="input search" value={{math offset "+" 10}}>
-            <input type="hidden" type="text" name="q" placeholder="input search" value={{q}}>
+            <div class="col d-flex justify-content-center">
+              <a class="btn btn-primary" href="/" role="button">Return Home</a>
+            </div>
             {{#if nextPageState}}
-            <button class="btn btn-warning" type="submit">Next Page</button>
+            <button class="btn btn-warning" name='btnClicked' value='next' type="submit">Next Page</button>
             {{/if }}
           </form>
         </div>
